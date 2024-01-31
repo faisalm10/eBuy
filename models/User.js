@@ -1,5 +1,4 @@
 import { Schema, model } from "mongoose";
-import bcrypt from "bcryptjs";
 
 const userSchema = new Schema(
   {
@@ -67,15 +66,6 @@ const userSchema = new Schema(
   }
 );
 
-userSchema.pre("save", async function () {
-  let salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
-});
-
-userSchema.methods.verifyPassword = async function (pwd, pwdDb) {
-  return await bcrypt.compare(pwd, pwdDb);
-};
-
-let User = model("User", userSchema);
+const User = model("User", userSchema);
 
 export default User;
