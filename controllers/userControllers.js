@@ -1,4 +1,5 @@
 import User from "../models/User.js";
+import { genToken } from "../utils/genToken.js";
 
 // @desc Register User
 // @path /api/v1/users/register
@@ -20,13 +21,13 @@ export const registerUser = async (req, res) => {
     res.status(201).json({
       status: "Success",
       message: "User registerd",
-      user
+      user,
     });
   } catch (error) {
     res.status(500).json({
-        status: "Fail",
-        message: error.message,
-      });
+      status: "Fail",
+      message: error.message,
+    });
   }
 };
 
@@ -34,23 +35,32 @@ export const registerUser = async (req, res) => {
 // @path /api/v1/users/login
 // @access Public
 export const loginUser = async (req, res) => {
-    try {
-      const { email, password } = req.body;
-      const existingUser = await User.findOne({ email: email });
-      if (!existingUser) {
-        return res.json({
-          message: "User doesn't exists, please register",
-        });
-      }
-      res.status(201).json({
-        status: "Success",
-        message: "User logged in",
-        existingUser
+  try {
+    const { email, password } = req.body;
+    const existingUser = await User.findOne({ email: email });
+    if (
+      !existingUser ||
+      !(await existingUser.verifyPwd(password, existingUser.password))
+    ) {
+      return res.json({
+        message: "User doesn't exists, please register",
       });
-    } catch (error) {
-      res.status(500).json({
-          status: "Fail",
-          message: error.message,
-        });
     }
-  };
+    const token = await genToken(existingUser._id);
+    res.status(201).json({
+      status: "Success",
+      message: "User logged in",
+      token,
+      existingUser,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "Fail",
+      message: error.message,
+    });
+  }
+};
+
+export const getProfile = (req, res) => {
+  res.send("hello welcome to profile page");
+};
