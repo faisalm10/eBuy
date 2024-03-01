@@ -39,9 +39,6 @@ export const loginUser = expressAsyncHandler(async (req, res) => {
     !existingUser ||
     !(await existingUser.verifyPwd(password, existingUser.password))
   ) {
-    // return res.json({
-    //   message: "User doesn't exists, please register",
-    // });
     throw new Error("User doesn't exists, please register");
   }
   const token = await genToken(existingUser._id);
@@ -56,3 +53,25 @@ export const loginUser = expressAsyncHandler(async (req, res) => {
 export const getProfile = (req, res) => {
   res.send("hello welcome to profile page");
 };
+
+export const updateShippingAddress = expressAsyncHandler(async (req,res)=>{
+  // const user = await User.findById(req.userId)
+
+  const shippingAddress={
+    firstName:req.body.firstName,
+    lastName:req.body.lastName,
+    address:req.body.address,
+    postalCode:req.body.postalCode,
+    state:req.body.state,
+    country:req.body.country,
+    phone:req.body.phone,
+  }
+
+  const updatedUser = await User.findByIdAndUpdate(req.userId,{shippingAddress:shippingAddress, hasShippingAddress: true },{new:true})
+
+  res.status(201).json({
+    status:"Success",
+    message:"user updated",
+    updatedUser
+  })
+})

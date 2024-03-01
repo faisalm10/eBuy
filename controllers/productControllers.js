@@ -8,8 +8,10 @@ import Brand from "../models/Brand.js";
 //@access   Private/Admin
 
 export const createProduct = expressAsyncHandler(async (req, res) => {
+  
   const { name, description, brand, category, sizes, colors, price, totalQty } =
     req.body;
+
 
   const existingProduct = await Product.findOne({ name: name });
   if (existingProduct) {
@@ -41,7 +43,8 @@ export const createProduct = expressAsyncHandler(async (req, res) => {
     colors,
     price,
     totalQty,
-    user: req.userId,
+    user:req.userId,
+    images:req.files
   });
 
   // push product into category

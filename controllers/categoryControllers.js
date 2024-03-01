@@ -13,6 +13,7 @@ export const createCategory = expressAsyncHandler(async (req, res) => {
   const category = await Category.create({
     name: name.toLowerCase(),
     user: req.userId,
+    image:req.file.path
   });
 
   res.json({
